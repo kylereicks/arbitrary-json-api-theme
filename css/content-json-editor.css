@@ -1,0 +1,12 @@
+#content{
+  display: none;
+}
+#content-json-editor ul ul{
+  margin-left: 2em;
+}
+#content-json-editor ul .add-item:first-of-type{
+  margin-left: 2em;
+}
+#content-json-editor .delete{
+  cursor: pointer;
+}

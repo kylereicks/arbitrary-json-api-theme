@@ -5,6 +5,7 @@ if(!class_exists('Theme_Admin')){
       add_action('init', array('Theme_Admin', 'remove_tinymce'));
       add_action('edit_form_after_title', array('Theme_Admin', 'editor_setup'));
       add_action('admin_enqueue_scripts', array('Theme_Admin', 'register_scripts'));
+      add_action('admin_enqueue_scripts', array('Theme_Admin', 'register_styles'));
     }
 
     public static function remove_tinymce(){
@@ -18,16 +19,35 @@ if(!class_exists('Theme_Admin')){
 
     public static function editor_setup(){
       global $post;
-      echo '<textarea name="content" id="content" style="display: none;">' . $post->post_content . '</textarea>';
-      echo '<div id="json-editor"></div>';
-      wp_enqueue_script('admineditor');
+      $field_types = array(
+        'object-object',
+        'object-array',
+        'object-string',
+        'array-object',
+        'array-array',
+        'array-string'
+      );
+      foreach($field_types as $template_name){
+        self::include_backbone_template($template_name);
+      }
+      echo '<textarea name="content" id="content">' . $post->post_content . '</textarea>';
+      echo '<div id="content-json-editor"></div>';
+      wp_enqueue_script('content-json-editor');
     }
 
     public static function register_scripts(){
-      wp_register_script('jsoneditor', get_template_directory_uri() . '/js/libs/jsoneditor/jsoneditor-min.js', array(), '2.3.6', true);
-      wp_register_style('jsoneditor', get_template_directory_uri() . '/js/libs/jsoneditor/jsoneditor-min.css', array(), '2.3.6', 'all');
-      wp_register_script('admineditor',get_template_directory_uri() .  '/js/admin-editor.min.js', array('jsoneditor'), THEME_VERSION, true);
-      wp_enqueue_style('jsoneditor');
+      wp_register_script('content-json-editor', get_template_directory_uri() .  '/js/content-json-editor.min.js', array('jquery', 'backbone', 'underscore', 'jquery-ui-sortable'), THEME_VERSION, true);
+    }
+
+    public static function register_styles(){
+      wp_register_style('content-json-editor', get_template_directory_uri() .  '/css/content-json-editor.css', array(), THEME_VERSION, 'all');
+      wp_enqueue_style('content-json-editor');
+    }
+
+    private static function include_backbone_template($template_name){
+      echo '<script type="text/template" id="' . $template_name . '">';
+      get_template_part('templates/backbone/' . $template_name);
+      echo '</script>';
     }
 
   }

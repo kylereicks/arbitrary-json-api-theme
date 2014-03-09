@@ -14,8 +14,10 @@ $data = array(
 $post_content = json_decode($post->post_content);
 
 if(!empty($post_content)){
-  foreach($post_content as $key => $value){
-    $data[$key] = $value;
+  foreach($post_content as $model){
+    foreach($model as $key => $value){
+      $data[$key] = $value;
+    }
   }
 }else{
   $data['record_content'] = $post->post_content;
