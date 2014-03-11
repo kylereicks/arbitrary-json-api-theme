@@ -2,7 +2,7 @@
   var Item = Backbone.Model.extend({
     defaults: {
       itemId: '',
-      buttons: '<button class="add-item item-object">+ {}</button><button class="add-item item-array">+ []</button><button class="add-item item-string">+ string</button>',
+      buttons: '<button class="add-item item-object">+ {}</button><button class="add-item item-array">+ []</button><button class="add-item item-string">+ string</button><button class="add-item item-image">+ image</button>',
       type: 'string',
       parentId: '0',
       parentType: 'object',
@@ -29,15 +29,16 @@
 
     events: {
       'click span.delete': 'remove',
-      'change input': 'updateModel'
+      'change input': 'updateModel',
+      'click button.select-image': 'selectImage'
     },
 
     initialize: function(){
-      _.bindAll(this, 'render', 'unrender', 'remove', 'updateModel');
+      _.bindAll(this, 'render', 'unrender', 'remove', 'updateModel', 'selectImage');
 
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
-      if('string' === this.model.get('type')){
+      if('string' === this.model.get('type') || 'image' === this.model.get('type')){
         this.model.set({buttons: ''});
       }
 
@@ -63,8 +64,34 @@
       this.model.collection.remove(this.model);
     },
 
+    selectImage: function(e){
+      e.preventDefault();
+
+      var self = this,
+      mediaModal = wp.media();
+
+      mediaModal.on('select', function(){
+        var selection = mediaModal.state().get('selection'),
+        output = [];
+        selection.each(function(attachment){
+          output.push(attachment.attributes);
+        });
+        self.model.set({value: output});
+      });
+      mediaModal.open();
+    },
+
     updateModel: function(e){
-      this.model.set({key: this.$el.find('input.key').val(), value: this.$el.find('input.value').val()});
+      switch(this.model.get('type')){
+        case 'string':
+        case 'object':
+        case 'array':
+          this.model.set({key: this.$el.find('input.key').val(), value: this.$el.find('input.value').val()});
+          break;
+        case 'image':
+          this.model.set({key: this.$el.find('input.key').val()});
+          break;
+      }
     }
   });
 
@@ -91,7 +118,7 @@
 
     render: function(){
       var self = this;
-      $(this.el).append("<button class='add-item item-object'>+ {}</button><button class='add-item item-array'>+ []</button><button class='add-item item-string'>+ string</button>");
+      $(this.el).append('<button class="add-item item-object">+ {}</button><button class="add-item item-array">+ []</button><button class="add-item item-string">+ string</button><button class="add-item item-image">+ image</button>');
       $(this.el).append("<ul></ul>");
       _(this.collection.models).each(function(item){
         self.appendItem(item);
@@ -100,10 +127,10 @@
 
     addItem: function(e){
       e.preventDefault();
-      var parentModel = 'LI' === e.target.parentElement.tagName ? this.collection.findWhere({itemId: e.target.parentElement.id}) : false,
+      var parentModel = 'li' === e.target.parentElement.tagName ? this.collection.findWhere({itemId: e.target.parentElement.id}) : false,
       item = new Item({
         type: e.target.className.match(/item-([^\s]+)/)[1],
-        parentId: parentModel ? parentModel.get('itemId') : '0',
+        parentId: parentModel ? parentModel.get('itemid') : '0',
         parentType: parentModel ? parentModel.get('type') : 'object',
         level: parentModel ? parentModel.get('level') + 1 : 0,
       });

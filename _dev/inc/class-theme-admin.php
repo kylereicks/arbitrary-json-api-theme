@@ -22,9 +22,11 @@ if(!class_exists('Theme_Admin')){
       $field_types = array(
         'object-object',
         'object-array',
+        'object-image',
         'object-string',
         'array-object',
         'array-array',
+        'array-image',
         'array-string'
       );
       foreach($field_types as $template_name){

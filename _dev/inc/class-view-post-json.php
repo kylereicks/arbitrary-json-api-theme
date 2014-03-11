@@ -55,14 +55,14 @@ if(!class_exists('View_Post_JSON')){
 
     private function handle_data_type($model){
       switch($model->type){
-      case 'string':
-        return $model->value;
-        break;
       case 'object':
         return $this->get_object_data($model);
         break;
       case 'array':
         return $this->get_array_data($model);
+        break;
+      default:
+        return $model->value;
         break;
       }
     }
