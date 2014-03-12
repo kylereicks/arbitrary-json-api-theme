@@ -127,10 +127,10 @@
 
     addItem: function(e){
       e.preventDefault();
-      var parentModel = 'li' === e.target.parentElement.tagName ? this.collection.findWhere({itemId: e.target.parentElement.id}) : false,
+      var parentModel = 'LI' === e.target.parentElement.tagName ? this.collection.findWhere({itemId: e.target.parentElement.id}) : false,
       item = new Item({
         type: e.target.className.match(/item-([^\s]+)/)[1],
-        parentId: parentModel ? parentModel.get('itemid') : '0',
+        parentId: parentModel ? parentModel.get('itemId') : '0',
         parentType: parentModel ? parentModel.get('type') : 'object',
         level: parentModel ? parentModel.get('level') + 1 : 0,
       });
