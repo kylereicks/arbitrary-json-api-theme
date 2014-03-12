@@ -14,6 +14,8 @@
     initialize: function(){
       if(!this.get('itemId')){
         this.set({itemId: this.cid});
+      }else{
+        this.cid = this.get('itemId');
       }
     }
   });
