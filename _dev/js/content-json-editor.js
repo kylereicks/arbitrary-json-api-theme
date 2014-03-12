@@ -36,7 +36,7 @@
     },
 
     initialize: function(){
-      _.bindAll(this, 'render', 'unrender', 'remove', 'updateModel', 'selectImage');
+      _.bindAll(this, 'render', 'unrender', 'removeTree', 'remove', 'updateModel', 'selectImage');
 
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
@@ -58,12 +58,15 @@
       $(this.el).remove();
     },
 
-    remove: function(){
-      _(this.model.collection.where({parentId: this.model.get('itemId')})).each(function(){
-        this.unrender();
-        this.model.collection.remove(this.model);
+    removeTree: function(model){
+      _(model.collection.where({parentId: model.get('itemId')})).each(function(item){
+        this.removeTree(item);
       }, this);
-      this.model.collection.remove(this.model);
+      model.destroy();
+    },
+
+    remove: function(){
+      this.removeTree(this.model);
     },
 
     selectImage: function(e){
