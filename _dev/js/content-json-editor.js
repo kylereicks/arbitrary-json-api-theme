@@ -7,6 +7,7 @@
       parentId: '0',
       parentType: 'object',
       level: 0,
+      order: 0,
       key: '',
       value: ''
     },
@@ -22,7 +23,9 @@
 
   var List = Backbone.Collection.extend({
     model: Item,
-    comparator: 'level'
+    comparator: function(item){
+      return [item.get('level'), item.get('order')];
+    }
   });
 
   var ItemView = Backbone.View.extend({
@@ -36,7 +39,7 @@
     },
 
     initialize: function(){
-      _.bindAll(this, 'render', 'unrender', 'removeTree', 'remove', 'updateModel', 'selectImage');
+      _.bindAll(this, 'render', 'unrender', 'removeTree', 'remove', 'updateModel', 'selectImage', 'updateOrder');
 
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
@@ -44,18 +47,29 @@
         this.model.set({buttons: ''});
       }
 
-      this.model.bind('change', this.render);
       this.model.bind('remove', this.unrender);
       this.model.bind('updateModel', this.updateModel);
     },
 
     render: function(){
+      var self = this;
       this.$el.html(this.template(this.model.toJSON()) + this.model.get('buttons'));
+      this.$el.children('ul, ol').sortable({
+        update: function(e, ui){
+          self.updateOrder();
+        }
+      });
       return this;
     },
 
     unrender: function(){
       $(this.el).remove();
+    },
+
+    updateOrder: function(){
+      _(this.model.collection.models).each(function(model){
+        model.set({order: $('li#' + model.get('itemId')).index()});
+      }, this);
     },
 
     removeTree: function(model){
@@ -108,7 +122,9 @@
     },
 
     initialize: function(){
-      _.bindAll(this, 'render', 'addItem', 'appendItem', 'updateContent');
+      _.bindAll(this, 'render', 'addItem', 'appendItem', 'updateContent', 'updateOrder');
+
+      var self = this;
 
       if($('#content').val()){
         this.collection = new List(JSON.parse($('#content').val()));
@@ -119,6 +135,12 @@
       this.collection.bind('change reset add remove', this.updateContent);
 
       this.render();
+
+      this.$el.children('ul, ol').sortable({
+        update: function(e, ui){
+          self.updateOrder();
+        }
+      });
     },
 
     render: function(){
@@ -149,11 +171,18 @@
       if('0' !== item.get('parentId')){
         $('#' + item.get('parentId') + '>ul, #' + item.get('parentId') + '>ol').append(itemView.render().el);
       }else{
-        $('ul', this.el).append(itemView.render().el);
+        this.$el.children('ul').append(itemView.render().el);
       }
+      item.set({order: itemView.$el.index()});
     },
 
-    updateContent: function(){
+    updateOrder: function(){
+      _(this.collection.models).each(function(model){
+        model.set({order: $('li#' + model.get('itemId')).index()});
+      }, this);
+    },
+
+    updateContent: function(e){
       $('#content').val(JSON.stringify(this.collection));
     }
   });
