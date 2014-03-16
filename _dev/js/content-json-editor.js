@@ -183,6 +183,7 @@
     },
 
     updateContent: function(e){
+      this.collection.sort();
       $('#content').val(JSON.stringify(this.collection));
     }
   });
