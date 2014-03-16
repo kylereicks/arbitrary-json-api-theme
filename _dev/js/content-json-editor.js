@@ -2,7 +2,12 @@
   var Item = Backbone.Model.extend({
     defaults: {
       itemId: '',
-      buttons: '<button class="add-item item-object">+ {}</button><button class="add-item item-array">+ []</button><button class="add-item item-string">+ string</button><button class="add-item item-image">+ image</button>',
+      buttons: [
+        'object',
+        'array',
+        'string',
+        'image'
+      ],
       type: 'string',
       parentId: '0',
       parentType: 'object',
@@ -44,16 +49,25 @@
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
       if('string' === this.model.get('type') || 'image' === this.model.get('type')){
-        this.model.set({buttons: ''});
+        this.model.set({buttons: []});
       }
+      this.buttons = this.getButtonsHtml(this.model.get('buttons'));
 
       this.model.bind('remove', this.unrender);
       this.model.bind('updateModel', this.updateModel);
     },
 
+    getButtonsHtml: function(buttonsArray){
+      var html = '';
+      _(buttonsArray).each(function(buttonName){
+        html += $('#button-add-' + buttonName).html();
+      });
+      return html ? '<span class="plus-icon"></span>' + html : html;
+    },
+
     render: function(){
       var self = this;
-      this.$el.html(this.template(this.model.toJSON()) + this.model.get('buttons'));
+      this.$el.html(this.template(this.model.toJSON()) + this.buttons);
       this.$el.children('ul, ol').sortable({
         update: function(e, ui){
           self.updateOrder();
@@ -145,11 +159,19 @@
 
     render: function(){
       var self = this;
-      $(this.el).append('<button class="add-item item-object">+ {}</button><button class="add-item item-array">+ []</button><button class="add-item item-string">+ string</button><button class="add-item item-image">+ image</button>');
+      $(this.el).append(this.getButtonsHtml(Object.getPrototypeOf(this.collection).model.prototype.defaults.buttons));
       $(this.el).append("<ul></ul>");
       _(this.collection.models).each(function(item){
         self.appendItem(item);
       }, this);
+    },
+
+    getButtonsHtml: function(buttonsArray){
+      var html = '';
+      _(buttonsArray).each(function(buttonName){
+        html += $('#button-add-' + buttonName).html();
+      });
+      return html ? '<span class="plus-icon"></span>' + html : html;
     },
 
     addItem: function(e){
