@@ -10,3 +10,62 @@
 #content-json-editor .delete{
   cursor: pointer;
 }
+#content-json-editor li{
+  border: 1px dotted #ccc;
+  cursor: move;
+}
+#content-json-editor li:before{
+  font-family: 'dashicons';
+  font-size: 2em;
+  line-height: 1em;
+  float: right;
+  content: '\f156';
+  cursor: move;
+}
+#content-json-editor .delete{
+  line-height: 2em;
+}
+#content-json-editor .delete:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f153';
+  cursor: pointer;
+}
+.plus-icon:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f132';
+}
+.add-item.item-array:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f204';
+  cursor: pointer;
+}
+.add-item.item-object:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f203';
+  cursor: pointer;
+}
+.add-item.item-image:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f128';
+  cursor: pointer;
+}
+.add-item.item-string:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f119';
+  cursor: pointer;
+}
+.image-preview{
+  vertical-align: middle;
+}

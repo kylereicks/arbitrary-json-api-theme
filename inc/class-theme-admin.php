@@ -20,6 +20,10 @@ if(!class_exists('Theme_Admin')){
     public static function editor_setup(){
       global $post;
       $field_types = array(
+        'button-add-object',
+        'button-add-array',
+        'button-add-string',
+        'button-add-image',
         'object-object',
         'object-array',
         'object-image',
