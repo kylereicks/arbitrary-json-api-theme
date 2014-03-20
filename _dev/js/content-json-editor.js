@@ -110,6 +110,7 @@
           output.push(attachment.attributes);
         });
         self.model.set({value: output});
+        self.$el.find('.image-preview').attr('src', output[0].sizes.thumbnail.url);
       });
       mediaModal.open();
     },
