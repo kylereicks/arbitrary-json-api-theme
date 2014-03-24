@@ -1,1 +1,1 @@
-<input class="value" type="text" value="<%= value %>" /> <span class="delete"><span class="screen-reader-text">delete</span></span>
+<span class="sort-handle"><span class="screen-reader-text">Drag to sort</span></span><input class="value" type="text" value="<%= value %>" /> <span class="delete"><span class="screen-reader-text">delete</span></span>
