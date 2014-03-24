@@ -12,9 +12,8 @@
 }
 #content-json-editor li{
   border: 1px dotted #ccc;
-  cursor: move;
 }
-#content-json-editor li:before{
+#content-json-editor .sort-handle:before{
   font-family: 'dashicons';
   font-size: 2em;
   line-height: 1em;
@@ -66,6 +65,24 @@
   content: '\f119';
   cursor: pointer;
 }
+.add-item.item-color:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f309';
+  cursor: pointer;
+}
+.add-item.item-map:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f231';
+  cursor: pointer;
+}
 .image-preview{
   vertical-align: middle;
+}
+.value.map{
+  width: 100%;
+  min-height: 200px;
 }

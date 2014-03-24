@@ -6,6 +6,8 @@
         'object',
         'array',
         'string',
+        'color',
+        'map',
         'image'
       ],
       type: 'string',
@@ -48,7 +50,7 @@
 
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
-      if('string' === this.model.get('type') || 'image' === this.model.get('type')){
+      if('string' === this.model.get('type') || 'image' === this.model.get('type') || 'color' === this.model.get('type') || 'map' === this.model.get('type')){
         this.model.set({buttons: []});
       }
       this.buttons = this.getButtonsHtml(this.model.get('buttons'));
@@ -71,7 +73,8 @@
       this.$el.children('ul, ol').sortable({
         update: function(e, ui){
           self.updateOrder();
-        }
+        },
+        handle: '.sort-handle'
       });
       return this;
     },
@@ -123,6 +126,8 @@
           this.model.set({key: this.$el.find('input.key').val(), value: this.$el.find('input.value').val()});
           break;
         case 'image':
+        case 'color':
+        case 'map':
           this.model.set({key: this.$el.find('input.key').val()});
           break;
       }
@@ -154,7 +159,8 @@
       this.$el.children('ul, ol').sortable({
         update: function(e, ui){
           self.updateOrder();
-        }
+        },
+        handle: '.sort-handle'
       });
     },
 
@@ -190,13 +196,38 @@
     appendItem: function(item){
       var itemView = new ItemView({
         model: item
-      });
+      }),
+      map = null,
+      marker = null,
+      initialLatLng = null;
       if('0' !== item.get('parentId')){
         $('#' + item.get('parentId') + '>ul, #' + item.get('parentId') + '>ol').append(itemView.render().el);
       }else{
         this.$el.children('ul').append(itemView.render().el);
       }
       item.set({order: itemView.$el.index()});
+      itemView.$el.find('.color-picker').wpColorPicker({
+        change: function(e, ui){
+          item.set({value: ui.color.toString()});
+        }
+      });
+      if(itemView.$el.find('div.map').hasClass('map')){
+        initialLatLng = itemView.$el.find('div.map').attr('data-latLng') ? itemView.$el.find('div.map').attr('data-latLng').replace(/[()]/g, '').split(', ') : '44.97022530459223, -93.289053440094'.split(', ');
+        map = new google.maps.Map(itemView.$el.find('div.map')[0], {
+          center: new google.maps.LatLng(initialLatLng[0], initialLatLng[1]),
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          zoom: 10
+        });
+        marker = new google.maps.Marker({
+          position: new google.maps.LatLng(initialLatLng[0], initialLatLng[1]),
+          map: map,
+          draggable: true
+        });
+        google.maps.event.addListener(marker, 'dragend', function(e){
+          console.log(marker.getPosition().toString());
+          item.set({value: marker.getPosition().toString()});
+        }, false);
+      }
     },
 
     updateOrder: function(){

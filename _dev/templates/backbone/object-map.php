@@ -1,0 +1,1 @@
+<span class="sort-handle"><span class="screen-reader-text">Drag to sort</span></span><input class="key" type="text" value="<%= key %>" />: <div class="value map" data-latLng="<%= value %>"></div> <span class="delete"><span class="screen-reader-text">delete</span></span>
