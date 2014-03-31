@@ -1,6 +1,17 @@
 #content{
   display: none;
 }
+.clearfix:before,
+.clearfix:after {
+  content: " "; /* 1 */
+  display: table; /* 2 */
+}
+.clearfix:after {
+  clear: both;
+}
+#ed_toolbar, #wp-content-editor-tools, #wp-content-editor-container, #postdivrich{
+  display: none;
+}
 #content-json-editor ul ul{
   margin-left: 2em;
 }
@@ -62,7 +73,7 @@
   font-family: 'dashicons';
   font-size: 1.5em;
   vertical-align: middle;
-  content: '\f119';
+  content: '\f122';
   cursor: pointer;
 }
 .add-item.item-color:before{
@@ -77,6 +88,13 @@
   font-size: 1.5em;
   vertical-align: middle;
   content: '\f231';
+  cursor: pointer;
+}
+.add-item.item-tinymce:before{
+  font-family: 'dashicons';
+  font-size: 1.5em;
+  vertical-align: middle;
+  content: '\f119';
   cursor: pointer;
 }
 .image-preview{

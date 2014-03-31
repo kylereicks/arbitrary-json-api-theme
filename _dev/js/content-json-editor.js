@@ -8,6 +8,7 @@
         'string',
         'color',
         'map',
+        'tinymce',
         'image'
       ],
       type: 'string',
@@ -50,7 +51,7 @@
 
       $(this.el).attr('id', this.model.get('itemId'));
       this.template = _.template($('#' + this.model.get('parentType') + '-' + this.model.get('type')).html());
-      if('string' === this.model.get('type') || 'image' === this.model.get('type') || 'color' === this.model.get('type') || 'map' === this.model.get('type')){
+      if('string' === this.model.get('type') || 'tinymce' === this.model.get('type') || 'image' === this.model.get('type') || 'color' === this.model.get('type') || 'map' === this.model.get('type')){
         this.model.set({buttons: []});
       }
       this.buttons = this.getButtonsHtml(this.model.get('buttons'));
@@ -73,6 +74,22 @@
       this.$el.children('ul, ol').sortable({
         update: function(e, ui){
           self.updateOrder();
+        },
+        stop: function(e, ui){
+          self.$el.find('textarea').each(function(){
+            var $textarea = $(this);
+            if($textarea.hasClass('wp-editor-area')){
+              tinyMCE.execCommand('mceAddEditor', false, $textarea.attr('id'));
+            }
+          });
+        },
+        start: function(e, ui){
+          self.$el.find('textarea').each(function(){
+            var $textarea = $(this);
+            if($textarea.hasClass('wp-editor-area')){
+              tinyMCE.execCommand('mceRemoveEditor', false, $textarea.attr('id'));
+            }
+          });
         },
         handle: '.sort-handle'
       });
@@ -123,12 +140,13 @@
         case 'string':
         case 'object':
         case 'array':
-          this.model.set({key: this.$el.find('input.key').val(), value: this.$el.find('input.value').val()});
+          this.model.set({key: this.$el.find('.key').val(), value: this.$el.find('.value').val()});
           break;
         case 'image':
         case 'color':
         case 'map':
-          this.model.set({key: this.$el.find('input.key').val()});
+        case 'tinymce':
+          this.model.set({key: this.$el.find('.key').val()});
           break;
       }
     }
@@ -159,6 +177,22 @@
       this.$el.children('ul, ol').sortable({
         update: function(e, ui){
           self.updateOrder();
+        },
+        stop: function(e, ui){
+          self.$el.find('textarea').each(function(){
+            var $textarea = $(this);
+            if($textarea.hasClass('wp-editor-area')){
+              tinyMCE.execCommand('mceAddEditor', false, $textarea.attr('id'));
+            }
+          });
+        },
+        start: function(e, ui){
+          self.$el.find('textarea').each(function(){
+            var $textarea = $(this);
+            if($textarea.hasClass('wp-editor-area')){
+              tinyMCE.execCommand('mceRemoveEditor', false, $textarea.attr('id'));
+            }
+          });
         },
         handle: '.sort-handle'
       });
@@ -227,6 +261,103 @@
           console.log(marker.getPosition().toString());
           item.set({value: marker.getPosition().toString()});
         }, false);
+      }
+      if(itemView.$el.find('textarea').hasClass('wp-editor-area')){
+        if(typeof tinymce !== 'undefined'){
+          try{
+            tinyMCE.init({
+              theme: 'modern',
+              skin: 'lightgray',
+              language: 'en',
+              resize: 'vertical',
+              formats: {
+                alignleft: [{
+                  selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
+                  styles: {
+                    textAlign: 'left'
+                  }
+                },
+                {
+                  selector: 'img,table,dl.wp-caption',
+                  classes: 'alignleft'
+                }],
+                aligncenter: [{
+                  selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
+                  styles: {
+                    textAlign: 'center'
+                  }
+                },
+                {
+                  selector: 'img,table,dl.wp-caption',
+                  classes: 'aligncenter'
+                }],
+                alignright: [{
+                  selector: 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li',
+                  styles: {
+                    textAlign: 'right'
+                  }
+                },
+                {
+                  selector: 'img,table,dl.wp-caption',
+                  classes: 'alignright'
+                }],
+                strikethrough: {
+                  inline: 'del'
+                }
+              },
+              relative_urls: false,
+              remove_script_host: false,
+              convert_urls: false,
+              browser_spellcheck: true,
+              fix_list_elements: true,
+              entities: '38,amp,60,lt,62,gt',
+              entity_encoding: 'raw',
+              menubar: false,
+              keep_styles: false,
+              paste_remove_styles: true,
+              preview_styles: 'font-family font-size font-weight font-style text-decoration text-transform',
+              wpeditimage_disable_captions: false,
+              plugins: 'charmap,hr,media,paste,tabfocus,textcolor,fullscreen,wordpress,wpeditimage,wpgallery,wplink,wpdialogs,wpview',
+              content_css: 'http://localhost/Wordpress-Development/api/wp-includes/css/dashicons.min.css?ver=3.9-beta2,http://localhost/Wordpress-Development/api/wp-includes/js/mediaelement/mediaelementplayer.min.css?ver=3.9-beta2,http://localhost/Wordpress-Development/api/wp-includes/js/mediaelement/wp-mediaelement.css?ver=3.9-beta2,http://localhost/Wordpress-Development/api/wp-includes/js/tinymce/skins/wordpress/wp-content.css?ver=3.9-beta2',
+              selector: '#' + item.get('itemId') + '-tinymce',
+              wpautop: true,
+              indent: false,
+              toolbar1: 'bold,italic,strikethrough,bullist,numlist,blockquote,hr,alignleft,aligncenter,alignright,link,unlink,wp_more,spellchecker,fullscreen,wp_adv',
+              toolbar2: 'formatselect,underline,alignjustify,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help',
+              toolbar3: '',
+              toolbar4: '',
+              tabfocus_elements: ':prev,:next',
+              body_class: item.get('itemId') + '-tinymce',
+              elements: 'none',
+              setup: function(editor){
+                editor.on('change', function(e){
+                  item.set({value: editor.getContent()});
+                });
+              }
+            });
+            if(!window.wpActiveEditor){
+              window.wpActiveEditor = item.get('itemId') + '-tinymce';
+            }
+          }catch(e){}
+        }
+        if(typeof quicktags !== 'undefined'){
+          try{
+            quicktags({
+              id: item.get('itemId') + '-tinymce',
+              buttons: 'strong,em,link,block,del,ins,img,ul,ol,li,code,more,close'
+            });
+            if(!window.wpActiveEditor){
+              window.wpActiveEditor = item.get('itemId') + '-tinymce';
+            }
+          }catch(e){}
+        }
+        if(typeof jQuery !== 'undefined'){
+          jQuery('.wp-editor-wrap').on('click.wp-editor', function(){
+            if(this.id){
+              window.wpActiveEditor = this.id.slice(3, -5);
+            }
+          });
+        }
       }
     },
 
