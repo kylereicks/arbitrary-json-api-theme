@@ -79,15 +79,18 @@
           self.$el.find('textarea').each(function(){
             var $textarea = $(this);
             if($textarea.hasClass('wp-editor-area')){
-              tinyMCE.execCommand('mceAddEditor', false, $textarea.attr('id'));
+              tinyMCE.execCommand('mceAddEditor', true, $textarea.attr('id'));
             }
           });
         },
         start: function(e, ui){
           self.$el.find('textarea').each(function(){
-            var $textarea = $(this);
+            var $textarea = $(this),
+            editorContent = '';
             if($textarea.hasClass('wp-editor-area')){
+              editorContent = tinyMCE.activeEditor.getContent();
               tinyMCE.execCommand('mceRemoveEditor', false, $textarea.attr('id'));
+              $textarea.val(editorContent);
             }
           });
         },
@@ -119,6 +122,7 @@
 
     selectImage: function(e){
       e.preventDefault();
+      e.stopPropagation();
 
       var self = this,
       mediaModal = wp.media();
@@ -132,6 +136,7 @@
         self.model.set({value: output});
         self.$el.find('.image-preview').attr('src', output[0].sizes.thumbnail.url);
       });
+
       mediaModal.open();
     },
 
@@ -182,15 +187,18 @@
           self.$el.find('textarea').each(function(){
             var $textarea = $(this);
             if($textarea.hasClass('wp-editor-area')){
-              tinyMCE.execCommand('mceAddEditor', false, $textarea.attr('id'));
+              tinyMCE.execCommand('mceAddEditor', true, $textarea.attr('id'));
             }
           });
         },
         start: function(e, ui){
           self.$el.find('textarea').each(function(){
-            var $textarea = $(this);
+            var $textarea = $(this),
+            editorContent = '';
             if($textarea.hasClass('wp-editor-area')){
+              editorContent = tinyMCE.activeEditor.getContent();
               tinyMCE.execCommand('mceRemoveEditor', false, $textarea.attr('id'));
+              $textarea.val(editorContent);
             }
           });
         },
@@ -258,7 +266,6 @@
           draggable: true
         });
         google.maps.event.addListener(marker, 'dragend', function(e){
-          console.log(marker.getPosition().toString());
           item.set({value: marker.getPosition().toString()});
         }, false);
       }
