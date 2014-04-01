@@ -10,7 +10,7 @@
     </div>
   </div>
   <div id="wp-<%= itemId %>-tinymce-editor-container" class="wp-editor-container">
-    <textarea id="<%= itemId %>-tinymce" class="value wp-editor-area" rows="20" autocomplete="off" cols="30" name="<%= itemId %>-tinymce"><%= value %></textarea>
+    <textarea id="<%= itemId %>-tinymce" class="value wp-editor-area" rows="5" autocomplete="off" cols="30" name="<%= itemId %>-tinymce"><%= value %></textarea>
   </div>
 </div>
 <span class="delete"><span class="screen-reader-text">delete</span></span>
