@@ -5,7 +5,7 @@ if(!class_exists('Theme_Autoloader')){
 
     public function __construct($dir = __DIR__){
       $this->base_directory = $dir;
-      spl_autoload_register(array($this, register));
+      spl_autoload_register(array($this, 'register'));
     }
 
     public function register($class_name){
